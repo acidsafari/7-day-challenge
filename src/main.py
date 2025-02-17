@@ -1,14 +1,14 @@
 from langchain.agents import initialize_agent, AgentType
-from langchain_community.llms import Ollama
-import logging
-from config import ScrapingConfig
+from langchain_ollama import OllamaLLM
 from agents.scraping_agent import WebScrapingTool
 from agents.sentiment_agent import SentimentAnalysisTool
+from config import ScrapingConfig
+import logging
 
 class MarketAnalysisOrchestrator:
     def __init__(self, config: ScrapingConfig):
         self.config = config
-        self.llm = Ollama(model="llama2")
+        self.llm = OllamaLLM(model="llama2")
         self.scraping_tool = WebScrapingTool(config)
         self.sentiment_tool = SentimentAnalysisTool()
         
@@ -22,13 +22,13 @@ class MarketAnalysisOrchestrator:
     def run_analysis(self) -> dict:
         try:
             # First, scrape the content
-            scraped_data = self.scraping_tool(self.config.base_urls)
+            scraped_data = self.scraping_tool._run(self.config.base_urls)
             
             if not scraped_data:
                 raise ValueError("No data could be scraped from the provided URLs")
 
             # Then, analyze the sentiment
-            sentiment_analysis = self.sentiment_tool(scraped_data)
+            sentiment_analysis = self.sentiment_tool._run(scraped_data)
 
             return {
                 'status': 'success',
