@@ -1,30 +1,105 @@
-# 7-day-challenge
+# Market Sentiment Analysis System
 
-Here we share the results of AICamp's 7-day-challenge, where we created a RAG application for financial analysis.
+A multi-agent system that scrapes financial news websites and generates market sentiment analysis using LangChain and Ollama.
 
-## web-scrapper-NO-FRAMEWORK
+## Features
 
-To use this workflow:
-    1. Initialize the WebScrapingWorkflow
-    2. Call the scrape() method with your target URL
-    3. Handle potential exceptions appropriately
+- Web scraping with robust error handling
+  - 404 error handling
+  - SSL certificate issues
+  - Rate limiting with exponential backoff
+  - Cookie management
+  - Timeout handling
+  - Connection error handling
+- Sentiment analysis using Ollama LLM
+- Configurable parameters for scraping scope
+- Detailed logging system
 
-The workflow will automatically:
-    - Handle temporary network errors
-    - Manage cookies and sessions
-    - Follow redirects while maintaining context
-    - Detect and handle common error states
-    - Attempt to manage cookie consent popups
+## Prerequisites
 
-Example usage pattern:
+- Python 3.8+
+- Ollama installed and running locally
+- The llama2 model installed in Ollama
 
-    scraper = WebScrapingWorkflow()
-    try:
-        result = scraper.scrape("https://target-website.com")
-        # Process the BeautifulSoup object...
-    except ScrapeError:
-        # Handle final failure...
+## Installation
 
+1. Clone the repository:
 
-## web-scrapper-hugging-face
+```bash
+git clone <repository-url>
+cd market-sentiment-analysis
+```
+
+2. Create and activate a virtual environment:
+```bash
+python -m venv venv
+source venv/bin/activate  # On Windows: venv\Scripts\activate
+```
+
+3. Install dependencies:
+```bash
+pip install -r requirements.txt
+```
+
+4. Install and run Ollama:
+```bash
+# Install Ollama from: https://ollama.ai/
+ollama pull llama2
+```
+
+## Project Structure
+
+```
+src/
+├── agents/
+│   ├── scraping_agent.py
+│   └── sentiment_agent.py
+├── config.py
+├── main.py
+└── test_market_analysis.py
+```
+
+## Configuration
+
+You can configure the system by modifying the `ScrapingConfig` in `config.py`:
+
+- `max_pages`: Maximum number of pages to scrape
+- `days_to_scrape`: Time window for article collection
+- `base_urls`: List of URLs to scrape
+- `retry_attempts`: Number of retry attempts for failed requests
+- `timeout`: Request timeout in seconds
+
+## Usage
+
+1. Ensure Ollama is running with the llama2 model:
+```bash
+ollama run llama2
+```
+
+2. Run the test script:
+```bash
+python src/test_market_analysis.py
+```
+
+## Error Handling
+
+The system handles various common errors:
+- Network connectivity issues
+- Rate limiting
+- SSL certificate errors
+- Invalid URLs
+- Timeout errors
+- Cookie consent prompts
+
+## Contributing
+
+1. Fork the repository
+2. Create a feature branch
+3. Commit your changes
+4. Push to the branch
+5. Create a Pull Request
+
+## License
+
+This project is licensed under the MIT License - see the LICENSE file for details.
 
