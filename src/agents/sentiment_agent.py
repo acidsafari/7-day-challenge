@@ -1,18 +1,19 @@
-from langchain.agents import Tool, AgentExecutor, create_react_agent
-from langchain.tools import BaseTool
-from langchain_community.llms import Ollama
+from langchain.agents import Tool
+from langchain_community.tools import BaseTool
+from langchain_ollama import OllamaLLM
 from langchain.prompts import PromptTemplate
 from langchain.chains import LLMChain
 from datetime import datetime
+from typing import List, Dict, Any
 
 class SentimentAnalysisTool(BaseTool):
-    name = "sentiment_analyzer"
-    description = "Analyzes market sentiment from scraped content"
+    name: str = "sentiment_analyzer"
+    description: str = "Analyzes market sentiment from scraped content"
 
     def __init__(self):
         super().__init__()
-        self.llm = Ollama(model="llama2")  # Or your preferred model
-        self.prompt = PromptTemplate(
+        self._llm = OllamaLLM(model="llama2")
+        self._prompt = PromptTemplate(
             input_variables=["content"],
             template="""
             Analyze the following content and provide a market sentiment analysis report.
@@ -25,14 +26,17 @@ class SentimentAnalysisTool(BaseTool):
             Content: {content}
             """
         )
-        self.chain = LLMChain(llm=self.llm, prompt=self.prompt)
+        self._chain = LLMChain(llm=self._llm, prompt=self._prompt)
 
-    def __call__(self, content: list[dict]) -> dict:
+    def _run(self, content: List[Dict[str, str]]) -> Dict[str, Any]:
         combined_text = "\n".join([item['text'] for item in content])
-        analysis = self.chain.run(content=combined_text)
+        analysis = self._chain.run(content=combined_text)
         
         return {
             'sentiment_analysis': analysis,
             'analyzed_documents': len(content),
             'timestamp': datetime.now().isoformat()
-        } 
+        }
+    
+    async def _arun(self, content: List[Dict[str, str]]) -> Dict[str, Any]:
+        raise NotImplementedError("Async not implemented") 
